@@ -103,6 +103,7 @@ start_update() {
 	# compare ip
 	if [ -n "$ip" -a -n "$current_ip" ]; then
 		echo_date "[aliddns_update.sh]：公网IP：$ip, 解析IP：$current_ip"
+		/sbin/ddns_custom_updated 1
 		# no ip change
 		if [ "$ip" == "$current_ip" ]; then
 			dbus set aliddns_last_act="$now: skipped($ip)"
@@ -111,15 +112,18 @@ start_update() {
 		fi
 	elif [ -z "$ip" -a -n "$current_ip" ]; then
 		dbus set aliddns_last_act="$now: 失败，原因：无法获取外网IP地址！"
-		echo_date "[aliddns_update.sh]：更新失败，原因：获取外网IP地址失败！"		
+		echo_date "[aliddns_update.sh]：更新失败，原因：获取外网IP地址失败！"
+		/sbin/ddns_custom_updated 0
 		exit 0
 	elif [ -n "$ip" -a -z "$current_ip" ]; then
 		dbus set aliddns_last_act="$now: 失败，原因：解析域名失败！"
-		echo_date "[aliddns_update.sh]：更新失败，原因：解析域名失败！"		
+		echo_date "[aliddns_update.sh]：更新失败，原因：解析域名失败！"	
+		/sbin/ddns_custom_updated 0
 		exit 0
 	else
 		dbus set aliddns_last_act="$now: 失败，原因：解析域名 + 外网IP失败！"
-		echo_date "[aliddns_update.sh]：更新失败，原因：解析域名 + 外网IP失败！"		
+		echo_date "[aliddns_update.sh]：更新失败，原因：解析域名 + 外网IP失败！"
+		/sbin/ddns_custom_updated 0
 		exit 0
 	fi
 	
@@ -196,6 +200,7 @@ start_update() {
 		# failed
 		dbus set aliddns_last_act="$now: 失败，原因：无法获取域名record id ！"
 		echo_date "[aliddns_update.sh]：本次更新失败，原因：无法获取域名record id ！"
+		/sbin/ddns_custom_updated 0
 	else
 		# 检测record_id是否有变化，如果变了，那可能用户更改了二级域名，需要删除原来的record
 		if [ -n "$aliddns_record_id" -a "$record_id" != "$aliddns_record_id" ];then
@@ -207,6 +212,7 @@ start_update() {
 		# success
 		dbus set aliddns_last_act="$now: success, ($ip)"
 		echo_date "[aliddns_update.sh]：更新成功，本次IP：$ip！"
+		/sbin/ddns_custom_updated 1
 	fi
 }
 
