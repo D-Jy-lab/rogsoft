@@ -1,5 +1,7 @@
 Koolshare Asuswrt-Merlin Aliddns Changelog
 ===========================================
+2.2
+   - fix	修复在【网络地图】首页显示aliddns域名时更新错误提示。（需要将系统DDNS设置为Custom DDNS）
 2.1
    - update	移除在【网络地图】首页显示aliddns域名的功能，因为这和系统DDNS有冲突并导致大量错误日志
 
